@@ -1,0 +1,125 @@
+
+{
+  "placeholderImages": [
+    {
+      "id": "cover1",
+      "description": "Abstract musical background",
+      "imageUrl": "https://picsum.photos/seed/music_bg1/1000/300",
+      "imageHint": "music abstract"
+    },
+    {
+      "id": "avatar1",
+      "description": "User avatar 1",
+      "imageUrl": "https://picsum.photos/seed/avatar1/100/100",
+      "imageHint": "portrait person"
+    },
+    {
+      "id": "avatar2",
+      "description": "User avatar 2",
+      "imageUrl": "https://picsum.photos/seed/avatar2/100/100",
+      "imageHint": "woman smiling"
+    },
+    {
+      "id": "avatar3",
+      "description": "User avatar 3",
+      "imageUrl": "https://picsum.photos/seed/avatar3/100/100",
+      "imageHint": "man dancing"
+    },
+    {
+      "id": "avatar4",
+      "description": "User avatar 4",
+      "imageUrl": "https://picsum.photos/seed/avatar4/100/100",
+      "imageHint": "person happy"
+    },
+    {
+      "id": "avatar5",
+      "description": "User avatar 5",
+      "imageUrl": "https://picsum.photos/seed/avatar5/100/100",
+      "imageHint": "woman salsa"
+    },
+    {
+      "id": "avatar6",
+      "description": "User avatar 6",
+      "imageUrl": "https://picsum.photos/seed/avatar6/100/100",
+      "imageHint": "man music"
+    },
+    {
+      "id": "avatar7",
+      "description": "User avatar 7",
+      "imageUrl": "https://picsum.photos/seed/avatar7/100/100",
+      "imageHint": "dj party"
+    },
+    {
+      "id": "avatar8",
+      "description": "User avatar 8",
+      "imageUrl": "https://picsum.photos/seed/avatar8/100/100",
+      "imageHint": "building school"
+    },
+    {
+      "id": "post1",
+      "description": "Salsa dancing couple",
+      "imageUrl": "https://picsum.photos/seed/post1/600/400",
+      "imageHint": "salsa dance"
+    },
+    {
+      "id": "post2",
+      "description": "Bachata dancers at sunset",
+      "imageUrl": "https://picsum.photos/seed/post2/600/400",
+      "imageHint": "bachata beach"
+    },
+    {
+      "id": "post3",
+      "description": "Live band playing Latin music",
+      "imageUrl": "https://picsum.photos/seed/post3/600/400",
+      "imageHint": "live band"
+    },
+    {
+      "id": "event1",
+      "description": "Salsa event poster",
+      "imageUrl": "https://picsum.photos/seed/event1/400/500",
+      "imageHint": "salsa party"
+    },
+    {
+      "id": "event2",
+      "description": "Bachata workshop poster",
+      "imageUrl": "https://picsum.photos/seed/event2/400/500",
+      "imageHint": "dance workshop"
+    },
+    {
+      "id": "event3",
+      "description": "Concert poster",
+      "imageUrl": "https://picsum.photos/seed/event3/400/500",
+      "imageHint": "music concert"
+    },
+    {
+      "id": "song_cover1",
+      "description": "Song cover art for 'Guantanamera'",
+      "imageUrl": "https://picsum.photos/seed/song1/100/100",
+      "imageHint": "cuba music"
+    },
+    {
+      "id": "song_cover2",
+      "description": "Song cover art for 'Oye Como Va'",
+      "imageUrl": "https://picsum.photos/seed/song2/100/100",
+      "imageHint": "latin rock"
+    },
+    {
+      "id": "song_cover3",
+      "description": "Song cover art for 'La Bilirrubina'",
+      "imageUrl": "https://picsum.photos/seed/song3/100/100",
+      "imageHint": "merengue art"
+    },
+    {
+      "id": "song_cover4",
+      "description": "Song cover art for '1, 2, 3'",
+      "imageUrl": "https://picsum.photos/seed/song4/100/100",
+      "imageHint": "pop latino"
+    },
+    {
+      "id": "song_cover5",
+      "description": "Song cover art for 'Vivir Mi Vida'",
+      "imageUrl": "https://picsum.photos/seed/song5/100/100",
+      "imageHint": "salsa pop"
+    }
+  ]
+}
