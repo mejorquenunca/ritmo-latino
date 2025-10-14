@@ -8,12 +8,13 @@ import { USER_PERMISSIONS } from '@/types/user';
 
 
 const firebaseConfig = {
-  "projectId": "studio-9223473200-95692",
-  "appId": "1:679951859699:web:7ab2391fc86404e9bcdc86",
-  "storageBucket": "studio-9223473200-95692.appspot.com",
-  "apiKey": "AIzaSyBmABxXlDQ1XJLK1xl34CSpVo120jL1L74",
-  "authDomain": "studio-9223473200-95692.firebaseapp.com",
-  "messagingSenderId": "679951859699"
+  // 🔥 REEMPLAZA CON TU NUEVA CONFIGURACIÓN DE FIREBASE
+  "projectId": "tu-nuevo-proyecto-id",
+  "appId": "tu-nuevo-app-id", 
+  "storageBucket": "tu-nuevo-proyecto.appspot.com",
+  "apiKey": "tu-nueva-api-key",
+  "authDomain": "tu-nuevo-proyecto.firebaseapp.com",
+  "messagingSenderId": "tu-nuevo-sender-id"
 };
 
 // Initialize Firebase
