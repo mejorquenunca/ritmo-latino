@@ -41,11 +41,11 @@ export function EventCard({ event }: EventCardProps) {
     <Card className="overflow-hidden h-full flex flex-col">
       <div className="relative aspect-[4/5] w-full">
         <Image
-          src={event.image.imageUrl}
+          src={event.image.url}
           alt={event.title}
           fill
           className="object-cover"
-          data-ai-hint={event.image.imageHint}
+          data-ai-hint={event.image.alt}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
         <div className="absolute bottom-0 left-0 p-4">

@@ -8,8 +8,8 @@
  * - EnhanceImageOutput - El tipo de retorno para la función enhanceImage.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
 
 const EnhanceImageInputSchema = z.object({
   imageDataUri: z
@@ -21,7 +21,7 @@ const EnhanceImageInputSchema = z.object({
 export type EnhanceImageInput = z.infer<typeof EnhanceImageInputSchema>;
 
 const EnhanceImageOutputSchema = z.object({
-    enhancedImageDataUri: z
+  enhancedImageDataUri: z
     .string()
     .describe(
       "La imagen mejorada, devuelta como un data URI."
@@ -40,23 +40,23 @@ const enhanceImageFlow = ai.defineFlow(
     outputSchema: EnhanceImageOutputSchema,
   },
   async (input) => {
-    const {media} = await ai.generate({
-        model: 'googleai/gemini-2.5-flash-image-preview',
-        prompt: [
-            {media: {url: input.imageDataUri}},
-            {text: 'Mejora esta imagen para un póster de evento, hazla más vibrante y llamativa. Mantén las dimensiones y el sujeto principal.'},
-        ],
-        config: {
-            responseModalities: ['IMAGE'],
-        },
+    const { media } = await ai.generate({
+      model: 'googleai/gemini-2.5-flash-image-preview',
+      prompt: [
+        { media: { url: input.imageDataUri } },
+        { text: 'Mejora esta imagen para un póster de evento, hazla más vibrante y llamativa. Mantén las dimensiones y el sujeto principal.' },
+      ],
+      config: {
+        responseModalities: ['IMAGE'],
+      },
     });
 
     if (!media || !media.url) {
-        throw new Error("La IA no pudo generar una imagen mejorada.");
+      throw new Error("La IA no pudo generar una imagen mejorada.");
     }
-    
+
     return {
-        enhancedImageDataUri: media.url,
+      enhancedImageDataUri: media.url,
     };
   }
 );

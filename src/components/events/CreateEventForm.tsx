@@ -173,9 +173,8 @@ export function CreateEventForm() {
         organizer: currentUser,
         image: {
             id: `evt-img-${Date.now()}`,
-            imageUrl: imagePreview || "https://picsum.photos/seed/event_fallback/400/500",
-            imageHint: 'event poster',
-            description: `Poster for ${data.title}`
+            url: imagePreview || "https://picsum.photos/seed/event_fallback/400/500",
+            alt: `Poster for ${data.title}`
         },
         category: finalCategory,
     };

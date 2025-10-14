@@ -2,7 +2,7 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
-import { events as initialEvents, type User, type ImagePlaceholder } from '@/lib/placeholder-data';
+// import { events as initialEvents, type User } from '@/lib/placeholder-data';
 
 export interface Event {
     id: string;
@@ -12,8 +12,8 @@ export interface Event {
     location: string;
     mapUrl?: string;
     price: number | 'Gratis';
-    organizer: User;
-    image: ImagePlaceholder;
+    organizer: { id: string; name: string; avatar: { imageUrl: string; }; };
+    image: { id: string; url: string; alt: string; };
     category: string;
 }
 
@@ -26,7 +26,7 @@ interface EventsContextType {
 const EventsContext = createContext<EventsContextType | undefined>(undefined);
 
 export function EventsProvider({ children }: { children: ReactNode }) {
-    const [events, setEvents] = useState<Event[]>(initialEvents);
+    const [events, setEvents] = useState<Event[]>([]);
 
     const addEvent = useCallback((newEvent: Event) => {
         setEvents(prev => [newEvent, ...prev]);

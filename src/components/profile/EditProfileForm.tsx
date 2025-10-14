@@ -70,14 +70,14 @@ export function EditProfileForm() {
       bio: userProfile?.bio || "",
       location: userProfile?.location || "",
       website: userProfile?.socialLinks?.website || "",
-      category: currentUser?.profile?.category || "",
+      category: userProfile?.userType || "",
       socials: {
-          facebook: currentUser?.profile?.socials?.facebook || '',
-          instagram: currentUser?.profile?.socials?.instagram || '',
-          tiktok: currentUser?.profile?.socials?.tiktok || '',
-          youtube: currentUser?.profile?.socials?.youtube || '',
+          facebook: userProfile?.socialLinks?.facebook || '',
+          instagram: userProfile?.socialLinks?.instagram || '',
+          tiktok: userProfile?.socialLinks?.tiktok || '',
+          youtube: userProfile?.socialLinks?.youtube || '',
       },
-      preferences: currentUser?.profile?.preferences || [],
+      preferences: [],
     },
   });
 
@@ -117,7 +117,7 @@ export function EditProfileForm() {
       return <div className="flex justify-center"><Loader2 className="h-8 w-8 animate-spin"/></div>
   }
   
-  const isCreator = currentUser?.profile?.role === 'creator';
+  const isCreator = userProfile?.userType === 'artist' || userProfile?.userType === 'dj';
 
   return (
     <Form {...form}>

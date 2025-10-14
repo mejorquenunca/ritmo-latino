@@ -30,7 +30,7 @@ export function ProfileCard({ user, isCurrentUser = false }: ProfileCardProps) {
     setPosts(prevPosts => [newPost, ...prevPosts]);
   };
   
-  const canPost = isCurrentUser || (currentUser?.profile?.role === 'creator');
+  const canPost = isCurrentUser;
 
   return (
     <div className="space-y-8">

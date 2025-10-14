@@ -50,7 +50,7 @@ export default function EventDetailPage() {
         {/* Hero Image */}
         <div className="relative aspect-video w-full">
           <Image
-            src={event.image.imageUrl}
+            src={event.image.url}
             alt={`Imagen de ${event.title}`}
             fill
             className="object-cover"
@@ -79,7 +79,7 @@ export default function EventDetailPage() {
                 <h2 className="text-2xl font-semibold font-headline mb-3">Galería</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     <div className="relative aspect-square">
-                        <Image src={event.image.imageUrl} alt="Galería de evento 1" fill className="rounded-lg object-cover" />
+                        <Image src={event.image.url} alt="Galería de evento 1" fill className="rounded-lg object-cover" />
                     </div>
                     {/* Placeholder for more gallery images */}
                 </div>
