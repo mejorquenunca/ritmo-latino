@@ -10,6 +10,10 @@ Una plataforma de red social dedicada a la música latina, combinando las mejore
 - **Perfiles Verificados**: Artistas, DJs, academias y más
 - **Tema Oscuro**: Diseño elegante con detalles dorados
 
+## 🚀 Demo en Vivo
+
+**[🎵 Ver Vasílala en Acción](https://vasilala-ritmo-latino.vercel.app)** ← ¡Pruébalo ahora!
+
 ## 🚀 Despliegue Rápido
 
 ### Opción 1: Vercel (Recomendado)

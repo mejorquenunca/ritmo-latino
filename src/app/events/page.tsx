@@ -315,10 +315,20 @@ export default function EventsPage() {
                   </div>
                   <div className="absolute bottom-4 left-4">
                     <Badge className="bg-black/70 text-white">
-                      {event.category === 'festival' && 'Festival'}
-                      {event.category === 'club_night' && 'Club'}
-                      {event.category === 'dance_class' && 'Clase'}
-                      {event.category === 'concert' && 'Concierto'}
+                      {(() => {
+                        const categoryLabels = {
+                          'festival': 'Festival',
+                          'club_night': 'Club',
+                          'dance_class': 'Clase',
+                          'concert': 'Concierto',
+                          'workshop': 'Taller',
+                          'competition': 'Competencia',
+                          'social_dance': 'Baile Social',
+                          'private_party': 'Fiesta Privada',
+                          'other': 'Otro'
+                        };
+                        return categoryLabels[event.category] || 'Evento';
+                      })()}
                     </Badge>
                   </div>
                 </div>

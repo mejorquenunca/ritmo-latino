@@ -51,7 +51,7 @@ const enhanceImageFlow = ai.defineFlow(
         },
     });
 
-    if (!media.url) {
+    if (!media || !media.url) {
         throw new Error("La IA no pudo generar una imagen mejorada.");
     }
     

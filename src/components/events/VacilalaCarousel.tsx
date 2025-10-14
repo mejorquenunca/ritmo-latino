@@ -19,7 +19,7 @@ export function VacilalaCarousel() {
   }, [events]);
 
   const filteredAndSortedEvents = useMemo(() => {
-    const userLocation = currentUser?.profile?.location;
+    const userLocation = null; // Simplificado para build
 
     // 1. Filter by category
     const filtered = selectedCategory === "Todos"

@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { users, type Post } from '@/lib/placeholder-data';
+import { type Post } from '@/lib/placeholder-data';
 import { ImageIcon, Video, Send, XCircle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
@@ -16,7 +16,7 @@ interface PostComposerProps {
 }
 
 export function PostComposer({ onAddPost }: PostComposerProps) {
-  const { currentUser } = useAuth();
+  const { currentUser, userProfile } = useAuth();
   
   const [content, setContent] = useState('');
   const [file, setFile] = useState<File | null>(null);
@@ -51,11 +51,11 @@ export function PostComposer({ onAddPost }: PostComposerProps) {
   }
 
   const handleSubmit = () => {
-    if ((!content && !file) || !currentUser?.profile) return;
+    if ((!content && !file) || !currentUser) return;
 
     const newPost: Post = {
       id: `p${Date.now()}`,
-      author: currentUser.profile,
+      author: currentUser as any,
       content,
       timestamp: 'Ahora mismo',
       likes: 0,
@@ -63,7 +63,8 @@ export function PostComposer({ onAddPost }: PostComposerProps) {
       image: filePreview && file?.type.startsWith('image/') ? {
         id: `img${Date.now()}`,
         imageUrl: filePreview,
-        imageHint: 'custom upload'
+        imageHint: 'custom upload',
+        description: 'Imagen subida por el usuario'
       } : undefined,
       video: filePreview && file?.type.startsWith('video/') ? {
         id: `vid${Date.now()}`,
@@ -94,19 +95,19 @@ export function PostComposer({ onAddPost }: PostComposerProps) {
     )
   }
 
-  const userProfile = currentUser.profile;
+
 
   return (
     <Card>
       <CardContent className="p-4">
         <div className="flex space-x-4">
           <Avatar>
-            <AvatarImage src={userProfile?.avatar.imageUrl} alt={userProfile?.name} />
-            <AvatarFallback>{userProfile?.name?.charAt(0) || 'U'}</AvatarFallback>
+            <AvatarImage src={userProfile?.avatar || `https://picsum.photos/seed/${userProfile?.id}/100/100`} alt={userProfile?.displayName || 'Usuario'} />
+            <AvatarFallback>{userProfile?.displayName?.charAt(0) || 'U'}</AvatarFallback>
           </Avatar>
           <div className="w-full">
             <Textarea
-              placeholder={`¿Qué estás pensando, ${userProfile?.name.split(' ')[0]}?`}
+              placeholder={`¿Qué estás pensando, ${userProfile?.displayName?.split(' ')[0] || 'Usuario'}?`}
               className="mb-2 bg-background border-2 focus-visible:ring-primary"
               value={content}
               onChange={(e) => setContent(e.target.value)}

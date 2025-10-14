@@ -75,7 +75,7 @@ export function CreateEventForm() {
   const router = useRouter();
   const { addEvent } = useEvents();
   const { toast } = useToast();
-  const currentUser = users.find(u => u.role === 'event_organizer') || users[6];
+  const currentUser = users.find(u => u.role === 'creator') || users[6];
   
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isEnhancing, setIsEnhancing] = useState(false);

@@ -7,7 +7,8 @@ import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { updateUserProfile, type AppUser } from "@/lib/firebase";
+import { updateUserProfile } from "@/lib/firebase";
+import type { VasílalaUser } from "@/types/user";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -57,7 +58,7 @@ const profileSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export function EditProfileForm() {
-  const { currentUser, setProfile, loading } = useAuth();
+  const { currentUser, userProfile, refreshUserProfile, loading } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
@@ -65,10 +66,10 @@ export function EditProfileForm() {
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      name: currentUser?.profile?.name || "",
-      bio: currentUser?.profile?.bio || "",
-      location: currentUser?.profile?.location || "",
-      website: currentUser?.profile?.website || "",
+      name: userProfile?.displayName || "",
+      bio: userProfile?.bio || "",
+      location: userProfile?.location || "",
+      website: userProfile?.socialLinks?.website || "",
       category: currentUser?.profile?.category || "",
       socials: {
           facebook: currentUser?.profile?.socials?.facebook || '',
@@ -90,11 +91,17 @@ export function EditProfileForm() {
     try {
       await updateUserProfile(currentUser.uid, data);
       
-      const updatedProfile: AppUser = {
-        ...currentUser.profile!,
-        ...data,
+      const updatedProfile: VasílalaUser = {
+        ...userProfile!,
+        displayName: data.name,
+        bio: data.bio,
+        location: data.location,
+        socialLinks: {
+          ...userProfile?.socialLinks,
+          website: data.website,
+        },
       };
-      setProfile(updatedProfile); // Update context state
+      await refreshUserProfile(); // Update context state
 
       toast({ title: "¡Perfil Actualizado!", description: "Tu información ha sido guardada con éxito." });
       router.push("/profile");

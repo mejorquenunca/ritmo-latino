@@ -1,9 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Configuración para despliegue
-  output: 'standalone',
-  
-  // Optimizaciones de imagen
+  // Optimizaciones de imagen para Vercel
   images: {
     domains: [
       'picsum.photos',
@@ -12,7 +9,12 @@ const nextConfig = {
       'sample-videos.com',
       'firebasestorage.googleapis.com'
     ],
-    unoptimized: true // Para compatibilidad con hosting estático
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
   },
   
   // Variables de entorno públicas
@@ -20,16 +22,12 @@ const nextConfig = {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
   },
   
-  // Configuración para Firebase
-  trailingSlash: true,
+  // Optimizaciones de build (swcMinify es por defecto en Next.js 15)
   
-  // Optimizaciones de build
-  swcMinify: true,
-  
-  // Configuración experimental
+  // Configuración experimental para mejor rendimiento
   experimental: {
-    // Mejoras de rendimiento
     optimizeCss: true,
+    scrollRestoration: true,
   },
   
   // Configuración de webpack para optimizar el bundle
@@ -44,7 +42,36 @@ const nextConfig = {
       };
     }
     
+    // Excluir archivos problemáticos de Genkit
+    config.externals = config.externals || [];
+    config.externals.push({
+      'handlebars': 'handlebars'
+    });
+    
     return config;
+  },
+  
+  // Headers para mejor rendimiento
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin',
+          },
+        ],
+      },
+    ];
   },
 };
 
