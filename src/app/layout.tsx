@@ -6,6 +6,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { MusicProvider } from '@/context/MusicContext';
 import { EventsProvider } from '@/context/EventsContext';
 import { AuthProvider } from '@/context/AuthContext';
+import { ThemeProvider } from '@/components/theme/ThemeProvider';
 
 export const metadata: Metadata = {
   title: 'Ritmo Latino',
@@ -25,14 +26,16 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        <AuthProvider>
-            <EventsProvider>
-            <MusicProvider>
-                <MainLayout>{children}</MainLayout>
-            </MusicProvider>
-            </EventsProvider>
-            <Toaster />
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+              <EventsProvider>
+              <MusicProvider>
+                  <MainLayout>{children}</MainLayout>
+              </MusicProvider>
+              </EventsProvider>
+              <Toaster />
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

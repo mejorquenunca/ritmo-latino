@@ -1,102 +1,121 @@
-# Ritmo Latino - Proyecto de Firebase Studio
+# 🎵 Vasílala - Ritmo Latino
 
-¡Bienvenido al código fuente de tu aplicación Ritmo Latino!
+Una plataforma de red social dedicada a la música latina, combinando las mejores características de TikTok, Spotify y Teleticket.
 
-Esta es una aplicación web construida con Next.js, React, TypeScript y Firebase.
+## 🌟 Características
 
----
+- **Feed de Videos**: Contenido vertical tipo TikTok con música latina
+- **TSón**: Reproductor de música estilo Spotify
+- **Vasílala**: Sistema de eventos y venta de entradas
+- **Perfiles Verificados**: Artistas, DJs, academias y más
+- **Tema Oscuro**: Diseño elegante con detalles dorados
 
-## Cómo Ejecutar el Proyecto Localmente
+## 🚀 Despliegue Rápido
 
-Una vez que hayas descargado y descomprimido el archivo ZIP del proyecto, sigue estos pasos desde tu terminal:
+### Opción 1: Vercel (Recomendado)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/tu-usuario/ritmo-latino)
 
-### 1. Navega a la Carpeta del Proyecto
+### Opción 2: Netlify
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/tu-usuario/ritmo-latino)
 
-Abre una terminal. Verás algo como `C:\Users\ASUS>`. Ahora, usa el comando `cd` (Change Directory) para situarte en la carpeta raíz que descomprimiste.
-
-**¡Muy Importante!** No entres en la carpeta `src`. Todos los comandos deben ejecutarse desde la carpeta principal del proyecto (la que contiene el archivo `package.json`).
-
-```bash
-# Ejemplo: si descomprimiste el proyecto en "C:\Users\ASUS\Desktop\mis-proyectos", usa ese comando.
-# El comando es "cd" seguido de la ruta.
-cd C:\Users\ASUS\Desktop\mis-proyectos
-```
-*Después de ejecutar este comando, tu terminal debería mostrar la nueva ruta, algo como: `C:\Users\ASUS\Desktop\mis-proyectos>`*
-
-### 2. Instala las Dependencias
-
-Este comando leerá el archivo `package.json` y descargará todas las librerías necesarias en una carpeta llamada `node_modules`.
+## 🛠️ Instalación Local
 
 ```bash
+# Clonar el repositorio
+git clone https://github.com/tu-usuario/ritmo-latino.git
+cd ritmo-latino
+
+# Instalar dependencias
 npm install
-```
 
-### 3. Inicia el Servidor de Desarrollo
+# Configurar variables de entorno
+cp .env.example .env.local
+# Editar .env.local con tus credenciales de Firebase
 
-Esto arrancará la aplicación en tu máquina local.
-
-```bash
+# Ejecutar en desarrollo
 npm run dev
 ```
 
-### 4. Abre la Aplicación
+## 📱 Tecnologías
 
-Abre tu navegador y ve a la siguiente dirección:
+- **Frontend**: Next.js 15, React 18, TypeScript
+- **Styling**: Tailwind CSS, Radix UI
+- **Backend**: Firebase (Firestore, Auth, Storage)
+- **Estado**: Zustand
+- **Formularios**: React Hook Form + Zod
 
-[http://localhost:3000](http://localhost:3000)
+## 🎯 Estructura del Proyecto
 
-¡Y listo! Ahora tienes la aplicación corriendo en tu propia computadora.
+```
+src/
+├── app/                 # App Router de Next.js
+├── components/          # Componentes React
+│   ├── feed/           # Componentes del feed
+│   ├── tson/           # Reproductor de música
+│   ├── vasilala/       # Sistema de eventos
+│   └── ui/             # Componentes base
+├── lib/                # Utilidades y configuración
+├── stores/             # Estado global (Zustand)
+└── types/              # Definiciones de TypeScript
+```
+
+## 🌐 URLs de Demostración
+
+- **Feed Principal**: `/`
+- **Música (TSón)**: `/tson`
+- **Eventos (Vasílala)**: `/events`
+- **Estudio**: `/studio`
+- **Perfil**: `/profile`
+
+## 🔧 Variables de Entorno
+
+Copia `.env.example` a `.env.local` y configura:
+
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY=tu_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=tu_proyecto.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=tu_proyecto_id
+# ... más configuraciones
+```
+
+## 📦 Scripts Disponibles
+
+```bash
+npm run dev          # Desarrollo con Turbopack
+npm run build        # Build de producción
+npm run start        # Servidor de producción
+npm run lint         # Linting
+npm run typecheck    # Verificación de tipos
+```
+
+## 🎨 Personalización
+
+### Colores del Tema
+- **Primario**: Dorado (#D4AF37)
+- **Fondo**: Negro profundo (#000000)
+- **Texto**: Blanco (#FFFFFF)
+- **Acentos**: Grises oscuros
+
+### Fuentes
+- **Principal**: Inter (sistema)
+- **Títulos**: PT Sans
+
+## 🤝 Contribuir
+
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
+
+## 🎵 Créditos
+
+Desarrollado con ❤️ para la comunidad latina de música y baile.
 
 ---
 
-## Cómo Desplegar el Proyecto en Firebase Hosting
-
-Tu proyecto está pre-configurado para un despliegue sencillo. Sigue estos pasos desde tu ordenador:
-
-### Prerrequisitos:
-
-*   **Node.js:** Asegúrate de tenerlo instalado ([nodejs.org](https://nodejs.org/)).
-*   **Cuenta de Firebase:** Necesitas una cuenta de Firebase (puedes usar tu cuenta de Google).
-
-### Pasos para el Despliegue:
-
-1.  **Descarga y Descomprime:** Descarga el código fuente como un archivo ZIP desde Firebase Studio y descomprímelo en tu ordenador. No te preocupes por no poder descargar las carpetas `node_modules` o `chunks`; no son necesarias.
-
-2.  **Instala Firebase CLI (si no lo tienes):**
-    Abre tu terminal y ejecuta:
-    ```bash
-    npm install -g firebase-tools
-    ```
-
-3.  **Inicia Sesión en Firebase:**
-    En tu terminal, ejecuta `firebase login`. Se abrirá un navegador para que inicies sesión.
-    ```bash
-    firebase login
-    ```
-
-4.  **Navega a la Carpeta Raíz del Proyecto:**
-    Usa el comando `cd` para situarte dentro de la carpeta que descomprimiste. **No entres en la carpeta `src`**.
-
-    ```bash
-    # Ejemplo: si tu proyecto está en "C:\Users\ASUS\Desktop\mis-proyectos", esa es la carpeta correcta.
-    # Recuerda usar "cd" antes de la ruta.
-    cd C:\Users\ASUS\Desktop\mis-proyectos
-    ```
-    *Después, tu terminal debería mostrar: `C:\Users\ASUS\Desktop\mis-proyectos>`*
-
-5.  **Instala Dependencias (si no lo hiciste antes):**
-    Una vez en la carpeta correcta, ejecuta:
-    ```bash
-    npm install
-    ```
-
-6.  **Despliega tu Aplicación:**
-    ¡Este es el paso final! Este comando construirá y subirá tu aplicación a Firebase Hosting.
-    ```bash
-    npm run deploy
-    ```
-
-Una vez que el comando termine, la terminal te mostrará la URL pública de tu aplicación (algo como `https://<tu-proyecto-id>.web.app`). ¡Y eso es todo! Tu aplicación estará en línea.
-
----
-*Este es un proyecto NextJS iniciado en Firebase Studio.*
+**¡Disfruta de Vasílala - donde la música latina cobra vida!** 🎊

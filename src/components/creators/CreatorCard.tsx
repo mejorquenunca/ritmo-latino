@@ -21,7 +21,7 @@ export function CreatorCard({ creator }: CreatorCardProps) {
                 <Link href={`/profile`} className="flex flex-col items-center gap-2 group">
                     <Avatar className="h-24 w-24 border-2 border-transparent group-hover:border-primary transition-all">
                         <AvatarImage src={creator.avatar.imageUrl} alt={creator.name} />
-                        <AvatarFallback>{creator.name.charAt(0)}</AvatarFallback>
+                        <AvatarFallback>{creator.name?.charAt(0) || 'C'}</AvatarFallback>
                     </Avatar>
                     <p className="text-sm font-medium text-center w-24 truncate">{creator.name}</p>
                 </Link>

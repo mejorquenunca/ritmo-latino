@@ -31,7 +31,7 @@ export function UserCard({ user }: UserCardProps) {
             <div className="flex items-center space-x-4">
                 <Avatar className="h-16 w-16">
                     <AvatarImage src={user.avatar.imageUrl} alt={user.name} />
-                    <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                    <AvatarFallback>{user.name?.charAt(0) || 'U'}</AvatarFallback>
                 </Avatar>
                 <div className="flex-grow">
                     <h3 className="font-bold font-headline text-lg">{user.name}</h3>

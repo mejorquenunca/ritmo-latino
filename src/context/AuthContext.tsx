@@ -1,101 +1,138 @@
+'use client';
 
-"use client";
-
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { auth, onAuthStateChanged, getDoc, doc, db, createUserProfileDocument, type FirebaseAuthUser, type AppUser } from '@/lib/firebase';
-import { Loader2 } from 'lucide-react';
-import { useRouter, usePathname } from 'next/navigation';
-import { useToast } from '@/hooks/use-toast';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { 
+  auth, 
+  createUserProfileDocument, 
+  getUserProfile,
+  onAuthStateChanged,
+  signOut as firebaseSignOut,
+  type FirebaseAuthUser,
+  type VasílalaUser 
+} from '@/lib/firebase';
+import { useAuthStore } from '@/stores/authStore';
+import { clearAllStores } from '@/stores';
 
 interface AuthContextType {
-  currentUser: (FirebaseAuthUser & { profile: AppUser | null }) | null;
+  currentUser: FirebaseAuthUser | null;
+  userProfile: VasílalaUser | null;
   loading: boolean;
-  setProfile: (profile: AppUser) => void;
+  signOut: () => Promise<void>;
+  refreshUserProfile: () => Promise<void>;
+  
+  // Funciones adicionales del store
+  isAuthenticated: () => boolean;
+  isVerified: () => boolean;
+  canUploadMusic: () => boolean;
+  canCreateEvents: () => boolean;
+  canSellTickets: () => boolean;
+  hasPermission: (permission: string) => boolean;
 }
 
-const AuthContext = createContext<AuthContextType>({
-  currentUser: null,
-  loading: true,
-  setProfile: () => {},
-});
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function useAuth() {
-  return useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
+
+interface AuthProviderProps {
+  children: React.ReactNode;
 }
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [currentUser, setCurrentUser] = useState<(FirebaseAuthUser & { profile: AppUser | null }) | null>(null);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
-  const pathname = usePathname();
-  const { toast } = useToast();
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const {
+    currentUser,
+    userProfile,
+    loading,
+    setCurrentUser,
+    setUserProfile,
+    setLoading,
+    setInitialized,
+    isAuthenticated,
+    isVerified,
+    canUploadMusic,
+    canCreateEvents,
+    canSellTickets,
+    hasPermission,
+    clearAuth,
+  } = useAuthStore();
+
+  const refreshUserProfile = async () => {
+    if (currentUser) {
+      setLoading(true);
+      try {
+        const profile = await getUserProfile(currentUser.uid);
+        setUserProfile(profile);
+      } catch (error) {
+        console.error('Error refreshing user profile:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const signOut = async () => {
+    try {
+      await firebaseSignOut(auth);
+      clearAllStores(); // Limpiar todos los stores
+    } catch (error) {
+      console.error('Error signing out:', error);
+      throw error;
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setCurrentUser(user);
+      
       if (user) {
-        const userDocRef = doc(db, 'users', user.uid);
-        let userDoc = await getDoc(userDocRef);
-
-        if (!userDoc.exists()) {
-          // This will be triggered for new sign-ups (email & Google)
-          await createUserProfileDocument(user, { role: 'fan' });
-          userDoc = await getDoc(userDocRef);
-          toast({ title: '¡Bienvenido/a a Ritmo Latino!', description: 'Tu cuenta ha sido creada.' });
-        }
+        setLoading(true);
         
-        const userProfile = userDoc.data() as AppUser;
-        setCurrentUser({ ...user, profile: userProfile });
-
-        // --- Centralized Redirection Logic ---
-        const isPublicAuthPath = pathname === '/login' || pathname === '/signup';
-        const needsProfileCompletion = !userProfile.name || userProfile.name === 'Usuario';
-
-        if (needsProfileCompletion) {
-            if (pathname !== '/profile/edit') {
-                toast({ title: 'Completa tu perfil', description: 'Por favor, completa tu información para continuar.' });
-                router.push('/profile/edit');
-            }
-        } else if (isPublicAuthPath) {
-            router.push('/');
+        try {
+          // Crear o actualizar el perfil del usuario
+          await createUserProfileDocument(user);
+          
+          // Obtener el perfil completo
+          const profile = await getUserProfile(user.uid);
+          setUserProfile(profile);
+          
+          // Marcar como inicializado
+          setInitialized(true);
+        } catch (error) {
+          console.error('Error loading user profile:', error);
+        } finally {
+          setLoading(false);
         }
-        // --- End of Redirection Logic ---
-
       } else {
-        setCurrentUser(null);
+        clearAuth();
+        setInitialized(true);
       }
-      setLoading(false);
     });
 
-    return () => unsubscribe();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    return unsubscribe;
+  }, [setCurrentUser, setUserProfile, setLoading, setInitialized, clearAuth]);
 
-  const setProfile = (profile: AppUser) => {
-      if(currentUser) {
-          setCurrentUser({...currentUser, profile});
-      }
-  }
-
-  const value = {
+  const value: AuthContextType = {
     currentUser,
+    userProfile,
     loading,
-    setProfile,
+    signOut,
+    refreshUserProfile,
+    isAuthenticated,
+    isVerified,
+    canUploadMusic,
+    canCreateEvents,
+    canSellTickets,
+    hasPermission,
   };
-
-  if (loading) {
-    return (
-        <div className="flex justify-center items-center h-screen w-screen bg-background">
-            <div className="text-center">
-                <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-primary" />
-                <p className="text-lg">Cargando sesión...</p>
-            </div>
-        </div>
-    );
-  }
 
   return (
     <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
-}
+};

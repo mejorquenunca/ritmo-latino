@@ -52,7 +52,7 @@ export function ProfileCard({ user, isCurrentUser = false }: ProfileCardProps) {
           <div className="flex flex-col md:flex-row items-center md:items-end">
             <Avatar className="h-28 w-28 md:h-36 md:w-36 border-4 border-background shrink-0">
               <AvatarImage src={user.avatar.imageUrl} alt={user.name} />
-              <AvatarFallback className="text-4xl">{user.name.charAt(0)}</AvatarFallback>
+              <AvatarFallback className="text-4xl">{user.name?.charAt(0) || 'U'}</AvatarFallback>
             </Avatar>
             <div className="md:ml-6 mt-4 md:mt-0 text-center md:text-left">
               <div className="flex items-center gap-2 justify-center md:justify-start">

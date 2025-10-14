@@ -1,158 +1,241 @@
-
 'use client';
 
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { Home, Music, User, PartyPopper, CalendarPlus, LogOut, LogIn, UserPlus } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { useAuth } from '@/context/AuthContext';
-import { signOut, auth } from '@/lib/firebase';
-import { useToast } from '@/hooks/use-toast';
+import { useNotificationStore } from '@/stores/notificationStore';
+import { useUserSettingsStore } from '@/stores/userSettingsStore';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
+import { NotificationCenter } from '@/components/notifications/NotificationCenter';
+import { 
+  Search, 
+  Bell, 
+  Menu, 
+  User, 
+  Settings, 
+  LogOut, 
+  Crown,
+  Music,
+  Calendar,
+  Home,
+  Mic2
+} from 'lucide-react';
+import { getUserTypeDisplayName } from '@/lib/auth';
 
-export function Header() {
-  const pathname = usePathname();
-  const router = useRouter();
-  const { currentUser } = useAuth();
-  const { toast } = useToast();
-  const user = currentUser?.profile;
-  const isCreator = user?.role === 'creator';
+interface HeaderProps {
+  onMenuToggle?: () => void;
+  isMobileMenuOpen?: boolean;
+}
 
-  const navItems = [
-    { href: '/', label: 'Inicio', icon: Home, visible: true },
-    { href: '/tson', label: 'TSón', icon: Music, visible: true },
-    { href: '/events/create', label: 'Crear Evento', icon: CalendarPlus, visible: isCreator },
-  ].filter(item => item.visible);
+export const Header: React.FC<HeaderProps> = ({ onMenuToggle, isMobileMenuOpen }) => {
+  const { currentUser, userProfile, signOut, isAuthenticated } = useAuth();
+  const { unreadCount } = useNotificationStore();
+  const { toggleSidebar } = useUserSettingsStore();
   
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      // Implementar búsqueda
+      console.log('Searching for:', searchQuery);
+    }
+  };
+
   const handleSignOut = async () => {
     try {
-        await signOut(auth);
-        toast({ title: "Has cerrado sesión." });
-        router.push('/');
-        router.refresh();
+      await signOut();
     } catch (error) {
-        toast({ variant: 'destructive', title: "Error", description: "No se pudo cerrar la sesión." });
+      console.error('Error signing out:', error);
     }
   };
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center max-w-4xl mx-auto px-4">
-          <div className="mr-auto flex items-center">
-            <Link href="/" className="mr-6 flex items-center space-x-2">
-              <PartyPopper className="h-6 w-6 text-primary" />
-              <span className="font-bold font-headline">Ritmo Latino</span>
+      <header className="sticky top-0 z-40 w-full border-b border-gray-800 bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-gray-900/60">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4">
+          {/* Logo y menú móvil */}
+          <div className="flex items-center space-x-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="md:hidden"
+              onClick={onMenuToggle}
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+            
+            <Link href="/" className="flex items-center space-x-2">
+              <div className="flex items-center justify-center w-8 h-8 bg-yellow-500 rounded-lg">
+                <Mic2 className="h-5 w-5 text-black" />
+              </div>
+              <span className="hidden sm:inline-block text-xl font-bold vasilala-text-gradient">
+                Vasílala
+              </span>
             </Link>
-            <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    'transition-colors hover:text-primary',
-                    pathname === item.href ? 'text-primary' : 'text-foreground/60'
-                  )}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
           </div>
-          
-          <div className="flex items-center gap-2">
-            {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                    <Avatar className='h-10 w-10'>
-                      <AvatarImage src={user.avatar.imageUrl} alt={user.name} />
-                      <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
-                  <DropdownMenuLabel className="font-normal">
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{user.name}</p>
-                      <p className="text-xs leading-none text-muted-foreground">
-                        {currentUser?.email}
-                      </p>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/profile">
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Perfil</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
+
+          {/* Barra de búsqueda */}
+          <div className="flex-1 max-w-md mx-4">
+            <form onSubmit={handleSearch} className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                type="search"
+                placeholder="Buscar artistas, música, eventos..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 bg-gray-800 border-gray-700 focus:border-yellow-500 focus:ring-yellow-500"
+              />
+            </form>
+          </div>
+
+          {/* Navegación y usuario */}
+          <div className="flex items-center space-x-2">
+            {/* Enlaces de navegación rápida (desktop) */}
+            <div className="hidden lg:flex items-center space-x-1">
+              <Link href="/">
+                <Button variant="ghost" size="sm" className="text-gray-300 hover:text-yellow-500">
+                  <Home className="h-4 w-4 mr-2" />
+                  Inicio
+                </Button>
+              </Link>
+              <Link href="/tson">
+                <Button variant="ghost" size="sm" className="text-gray-300 hover:text-yellow-500">
+                  <Music className="h-4 w-4 mr-2" />
+                  TSón
+                </Button>
+              </Link>
+              <Link href="/events">
+                <Button variant="ghost" size="sm" className="text-gray-300 hover:text-yellow-500">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Eventos
+                </Button>
+              </Link>
+            </div>
+
+            {isAuthenticated() ? (
+              <>
+                {/* Notificaciones */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="relative"
+                  onClick={() => setShowNotifications(!showNotifications)}
+                >
+                  <Bell className="h-5 w-5" />
+                  {unreadCount > 0 && (
+                    <Badge 
+                      variant="destructive" 
+                      className="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs"
+                    >
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </Badge>
+                  )}
+                </Button>
+
+                {/* Menú de usuario */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={userProfile?.avatar} alt={userProfile?.displayName} />
+                        <AvatarFallback className="bg-yellow-500 text-black">
+                          {userProfile?.displayName?.charAt(0)?.toUpperCase() || 'U'}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="end" forceMount>
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">
+                          {userProfile?.displayName}
+                        </p>
+                        <p className="text-xs leading-none text-muted-foreground">
+                          {userProfile?.email}
+                        </p>
+                        <div className="flex items-center space-x-2 mt-2">
+                          <Badge variant="secondary" className="text-xs">
+                            {getUserTypeDisplayName(userProfile?.userType || 'fan')}
+                          </Badge>
+                          {userProfile?.verified && (
+                            <Badge variant="default" className="text-xs bg-green-600">
+                              Verificado
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile" className="cursor-pointer">
+                        <User className="mr-2 h-4 w-4" />
+                        <span>Mi Perfil</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    
+                    {userProfile?.userType === 'fan' && (
+                      <DropdownMenuItem asChild>
+                        <Link href="/profile/upgrade" className="cursor-pointer">
+                          <Crown className="mr-2 h-4 w-4" />
+                          <span>Upgrade Cuenta</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    
+                    <DropdownMenuItem asChild>
+                      <Link href="/settings" className="cursor-pointer">
+                        <Settings className="mr-2 h-4 w-4" />
+                        <span>Configuraciones</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    
+                    <DropdownMenuSeparator />
+                    
+                    <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Cerrar Sesión</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
             ) : (
-                <div className="hidden md:flex gap-2">
-                    <Button asChild variant="ghost">
-                        <Link href="/login">
-                            <LogIn className="mr-2 h-4 w-4"/> Iniciar Sesión
-                        </Link>
-                    </Button>
-                    <Button asChild>
-                        <Link href="/signup">
-                            <UserPlus className="mr-2 h-4 w-4"/> Registrarse
-                        </Link>
-                    </Button>
-                </div>
+              /* Botones de autenticación */
+              <div className="flex items-center space-x-2">
+                <Link href="/login">
+                  <Button variant="ghost" size="sm">
+                    Iniciar Sesión
+                  </Button>
+                </Link>
+                <Link href="/signup">
+                  <Button size="sm" className="btn-vasilala-primary">
+                    Registrarse
+                  </Button>
+                </Link>
+              </div>
             )}
           </div>
         </div>
       </header>
 
-      {/* Mobile Nav */}
-      <nav className="md:hidden flex items-center justify-around fixed bottom-0 left-0 right-0 h-16 bg-background/95 border-t z-50">
-         {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                'flex flex-col items-center justify-center transition-colors hover:text-primary p-1 rounded-md w-1/4',
-                pathname === item.href ? 'text-primary' : 'text-foreground/60'
-              )}
-            >
-              <item.icon className="h-5 w-5" />
-              <span className="text-xs mt-1 text-center">{item.label}</span>
-            </Link>
-          ))}
-          {user ? (
-            <Link
-                href="/profile"
-                className={cn(
-                'flex flex-col items-center justify-center transition-colors hover:text-primary p-1 rounded-md w-1/4',
-                pathname === '/profile' ? 'text-primary' : 'text-foreground/60'
-                )}
-            >
-                <User className="h-5 w-5" />
-                <span className="text-xs mt-1 text-center">Perfil</span>
-            </Link>
-          ) : (
-             <Link
-                href="/login"
-                className={cn(
-                'flex flex-col items-center justify-center transition-colors hover:text-primary p-1 rounded-md w-1/4',
-                pathname === '/login' ? 'text-primary' : 'text-foreground/60'
-                )}
-            >
-                <LogIn className="h-5 w-5" />
-                <span className="text-xs mt-1 text-center">Entrar</span>
-            </Link>
-          )}
-      </nav>
+      {/* Centro de notificaciones */}
+      <NotificationCenter 
+        isOpen={showNotifications} 
+        onClose={() => setShowNotifications(false)} 
+      />
     </>
   );
-}
+};

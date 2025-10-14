@@ -102,7 +102,7 @@ export function PostComposer({ onAddPost }: PostComposerProps) {
         <div className="flex space-x-4">
           <Avatar>
             <AvatarImage src={userProfile?.avatar.imageUrl} alt={userProfile?.name} />
-            <AvatarFallback>{userProfile?.name.charAt(0)}</AvatarFallback>
+            <AvatarFallback>{userProfile?.name?.charAt(0) || 'U'}</AvatarFallback>
           </Avatar>
           <div className="w-full">
             <Textarea

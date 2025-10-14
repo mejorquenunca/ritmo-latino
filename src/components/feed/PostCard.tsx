@@ -15,7 +15,7 @@ export function PostCard({ post }: PostCardProps) {
       <CardHeader className="flex flex-row items-center space-x-4 p-4">
         <Avatar>
           <AvatarImage src={post.author.avatar.imageUrl} alt={post.author.name} />
-          <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
+          <AvatarFallback>{post.author.name?.charAt(0) || 'U'}</AvatarFallback>
         </Avatar>
         <div>
           <p className="font-semibold">{post.author.name}</p>

@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter, usePathname } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { auth, googleProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup } from "@/lib/firebase";
+import { signUpWithEmail, signInWithEmail, signInWithGoogle } from "@/lib/auth";
 import { useAuth } from "@/context/AuthContext";
 
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,7 @@ import { Chrome, Loader2 } from "lucide-react";
 const signupSchema = z.object({
     email: z.string().email({ message: "Por favor, introduce un email válido." }),
     password: z.string().min(6, { message: "La contraseña debe tener al menos 6 caracteres." }),
-    role: z.enum(["fan", "creator"], { required_error: "Debes seleccionar un rol." }),
+    displayName: z.string().min(2, { message: "El nombre debe tener al menos 2 caracteres." }),
 });
 
 const loginSchema = z.object({
@@ -43,17 +43,28 @@ export function AuthForm({ mode }: AuthFormProps) {
     defaultValues: {
       email: "",
       password: "",
-      role: "fan" as "fan" | "creator",
+      displayName: "",
     },
   });
 
   const handleGoogleSignIn = async () => {
+    setIsLoading(true);
     try {
-      await signInWithPopup(auth, googleProvider);
+      await signInWithGoogle();
+      toast({ 
+        title: "¡Bienvenido a Vasílala!", 
+        description: "Has iniciado sesión correctamente." 
+      });
     } catch (error: any) {
-      if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
-        toast({ variant: "destructive", title: "Error de autenticación", description: error.message });
+      if (error.message !== 'Ventana cerrada por el usuario' && error.message !== 'Solicitud cancelada') {
+        toast({ 
+          variant: "destructive", 
+          title: "Error de autenticación", 
+          description: error.message 
+        });
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -61,34 +72,42 @@ export function AuthForm({ mode }: AuthFormProps) {
     setIsLoading(true);
     try {
       if (mode === 'signup') {
-        const { email, password } = values as z.infer<typeof signupSchema>;
-        await createUserWithEmailAndPassword(auth, email, password);
+        const { email, password, displayName } = values as z.infer<typeof signupSchema>;
+        await signUpWithEmail(email, password, displayName);
+        toast({ 
+          title: "¡Cuenta creada exitosamente!", 
+          description: "Bienvenido a Vasílala. Tu cuenta se ha creado como Fan." 
+        });
       } else {
         const { email, password } = values as z.infer<typeof loginSchema>;
-        await signInWithEmailAndPassword(auth, email, password);
+        await signInWithEmail(email, password);
+        toast({ 
+          title: "¡Bienvenido de vuelta!", 
+          description: "Has iniciado sesión correctamente." 
+        });
       }
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Error de autenticación", description: error.message });
+      toast({ 
+        variant: "destructive", 
+        title: "Error de autenticación", 
+        description: error.message 
+      });
     } finally {
         setIsLoading(false);
     }
   };
   
+  const pathname = usePathname();
+  const isFormDisabled = isLoading || authLoading;
+
   // Redirect if user is already logged in
   useEffect(() => {
     if (!authLoading && currentUser) {
-        if(currentUser.profile && (currentUser.profile.name === 'Usuario' || !currentUser.profile.name)) {
-            if (pathname !== '/profile/edit') {
-              router.push('/profile/edit');
-            }
-        } else if (pathname === '/login' || pathname === '/signup') {
-            router.push('/');
-        }
+      if (pathname === '/login' || pathname === '/signup') {
+        router.push('/');
+      }
     }
-  }, [currentUser, authLoading, router]);
-
-  const isFormDisabled = isLoading || authLoading;
-  const pathname = usePathname();
+  }, [currentUser, authLoading, router, pathname]);
 
   return (
     <div className="space-y-6">
@@ -135,40 +154,24 @@ export function AuthForm({ mode }: AuthFormProps) {
                 />
                 {mode === 'signup' && (
                     <FormField
-                    control={form.control}
-                    name="role"
-                    render={({ field }) => (
-                        <FormItem className="space-y-3">
-                            <FormLabel>¿Cómo quieres unirte a Ritmo Latino?</FormLabel>
+                        control={form.control}
+                        name="displayName"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Nombre completo</FormLabel>
                             <FormControl>
-                                <RadioGroup
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                                className="flex flex-col space-y-1"
-                                disabled={isFormDisabled}
-                                >
-                                <FormItem className="flex items-center space-x-3 space-y-0">
-                                    <FormControl>
-                                    <RadioGroupItem value="fan" />
-                                    </FormControl>
-                                    <FormLabel className="font-normal">
-                                        Como Fan
-                                    </FormLabel>
-                                </FormItem>
-                                <FormItem className="flex items-center space-x-3 space-y-0">
-                                    <FormControl>
-                                    <RadioGroupItem value="creator" />
-                                    </FormControl>
-                                    <FormLabel className="font-normal">
-                                        Como Creador (Músico, Organizador, etc.)
-                                    </FormLabel>
-                                </FormItem>
-                                </RadioGroup>
+                                <Input placeholder="Tu nombre completo" {...field} disabled={isFormDisabled} />
                             </FormControl>
                             <FormMessage />
-                        </FormItem>
-                    )}
+                            </FormItem>
+                        )}
                     />
+                )}
+                {mode === 'signup' && (
+                    <div className="bg-gray-800 p-4 rounded-lg text-sm text-gray-300">
+                        <p className="font-semibold text-yellow-500 mb-2">ℹ️ Información importante:</p>
+                        <p>Todas las cuentas nuevas se crean como <strong>Fan</strong>. Si eres artista, DJ, organizador de eventos, etc., podrás solicitar un upgrade después del registro.</p>
+                    </div>
                 )}
                 <Button type="submit" className="w-full" disabled={isFormDisabled}>
                     {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : (mode === 'login' ? 'Iniciar Sesión' : 'Crear Cuenta')}

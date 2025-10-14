@@ -55,6 +55,33 @@ export default {
           '4': 'hsl(var(--chart-4))',
           '5': 'hsl(var(--chart-5))',
         },
+        // Colores específicos de Vasílala
+        vasilala: {
+          gold: {
+            50: '#FFFDF7',
+            100: '#FFF9E6',
+            200: '#FFF0B8',
+            300: '#FFE68A',
+            400: '#FFDD5C',
+            500: '#D4AF37', // Dorado principal
+            600: '#B8941F',
+            700: '#9C7A07',
+            800: '#7A5F00',
+            900: '#5C4700',
+          },
+          dark: {
+            50: '#F5F5F5',
+            100: '#E5E5E5',
+            200: '#CCCCCC',
+            300: '#B3B3B3',
+            400: '#999999',
+            500: '#666666',
+            600: '#4D4D4D',
+            700: '#333333',
+            800: '#1E1E1E', // Fondo principal
+            900: '#121212', // Fondo más oscuro
+          }
+        },
         sidebar: {
           DEFAULT: 'hsl(var(--sidebar-background))',
           foreground: 'hsl(var(--sidebar-foreground))',
