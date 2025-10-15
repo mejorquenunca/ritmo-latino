@@ -1,32 +1,21 @@
 import { 
-  auth, 
-  googleProvider,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  createUserProfileDocument,
-  type FirebaseAuthUser 
-} from '@/lib/firebase';
-import { updateProfile } from 'firebase/auth';
-import type { UserType } from '@/types/user';
+  signInWithGoogleMock,
+  signUpWithEmailMock,
+  signInWithEmailMock
+} from '@/lib/auth-mock';
+import type { UserType, VasílalaUser } from '@/types/user';
 
-// Función para registrarse con email y contraseña
+// Función para registrarse con email y contraseña (MOCK)
 export const signUpWithEmail = async (
   email: string, 
   password: string, 
-  displayName: string
-): Promise<FirebaseAuthUser> => {
+  displayName: string,
+  userType: UserType = 'fan'
+): Promise<VasílalaUser> => {
   try {
-    const { user } = await createUserWithEmailAndPassword(auth, email, password);
-    
-    // Actualizar el displayName del usuario
-    if (user) {
-      await updateProfile(user, { displayName });
-      
-      // Crear el perfil en Firestore
-      await createUserProfileDocument(user, { displayName });
-    }
-    
+    console.log('🎭 Registro mock con:', { email, displayName, userType });
+    const user = await signUpWithEmailMock(email, password, displayName, userType);
+    console.log('✅ Usuario registrado:', user);
     return user;
   } catch (error: any) {
     console.error('Error signing up with email:', error);
@@ -34,59 +23,44 @@ export const signUpWithEmail = async (
   }
 };
 
-// Función para iniciar sesión con email y contraseña
+// Función para iniciar sesión con email y contraseña (MOCK)
 export const signInWithEmail = async (
   email: string, 
   password: string
-): Promise<FirebaseAuthUser> => {
+): Promise<VasílalaUser> => {
   try {
-    const { user } = await signInWithEmailAndPassword(auth, email, password);
+    console.log('🎭 Login mock con:', { email });
+    const user = await signInWithEmailMock(email, password);
+    console.log('✅ Usuario logueado:', user);
     return user;
   } catch (error: any) {
     console.error('Error signing in with email:', error);
-    throw new Error(getAuthErrorMessage(error.code));
+    throw new Error(getAuthErrorMessage(error.message));
   }
 };
 
-// Función para iniciar sesión con Google
-export const signInWithGoogle = async (): Promise<FirebaseAuthUser> => {
+// Función para iniciar sesión con Google (MOCK)
+export const signInWithGoogle = async (): Promise<VasílalaUser> => {
   try {
-    const { user } = await signInWithPopup(auth, googleProvider);
-    
-    // Crear el perfil en Firestore si es la primera vez
-    await createUserProfileDocument(user);
-    
+    console.log('🎭 Login con Google mock...');
+    const user = await signInWithGoogleMock();
+    console.log('✅ Usuario logueado con Google:', user);
     return user;
   } catch (error: any) {
     console.error('Error signing in with Google:', error);
-    throw new Error(getAuthErrorMessage(error.code));
+    throw new Error('Error al iniciar sesión con Google');
   }
 };
 
 // Función para obtener mensajes de error en español
-const getAuthErrorMessage = (errorCode: string): string => {
-  switch (errorCode) {
-    case 'auth/user-not-found':
-      return 'No existe una cuenta con este email';
-    case 'auth/wrong-password':
-      return 'Contraseña incorrecta';
-    case 'auth/email-already-in-use':
-      return 'Ya existe una cuenta con este email';
-    case 'auth/weak-password':
-      return 'La contraseña debe tener al menos 6 caracteres';
-    case 'auth/invalid-email':
-      return 'Email inválido';
-    case 'auth/too-many-requests':
-      return 'Demasiados intentos fallidos. Intenta más tarde';
-    case 'auth/network-request-failed':
-      return 'Error de conexión. Verifica tu internet';
-    case 'auth/popup-closed-by-user':
-      return 'Ventana cerrada por el usuario';
-    case 'auth/cancelled-popup-request':
-      return 'Solicitud cancelada';
-    default:
-      return 'Error de autenticación. Intenta nuevamente';
+const getAuthErrorMessage = (errorMessage: string): string => {
+  if (errorMessage.includes('Usuario no encontrado')) {
+    return 'No existe una cuenta con este email';
   }
+  if (errorMessage.includes('Contraseña')) {
+    return 'Contraseña incorrecta';
+  }
+  return errorMessage || 'Error de autenticación';
 };
 
 // Función para validar email

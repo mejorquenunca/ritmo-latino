@@ -2,16 +2,19 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { 
-  auth, 
-  createUserProfileDocument, 
-  getUserProfile,
-  onAuthStateChanged,
-  signOut as firebaseSignOut,
-  type FirebaseAuthUser,
-  type VasílalaUser 
-} from '@/lib/firebase';
+  getCurrentUserMock,
+  signOutMock
+} from '@/lib/auth-mock';
+import type { VasílalaUser } from '@/types/user';
 import { useAuthStore } from '@/stores/authStore';
 import { clearAllStores } from '@/stores';
+
+// Tipo para compatibilidad
+type FirebaseAuthUser = {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+};
 
 interface AuthContextType {
   currentUser: FirebaseAuthUser | null;
@@ -62,22 +65,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   } = useAuthStore();
 
   const refreshUserProfile = async () => {
-    if (currentUser) {
-      setLoading(true);
-      try {
-        const profile = await getUserProfile(currentUser.uid);
-        setUserProfile(profile);
-      } catch (error) {
-        console.error('Error refreshing user profile:', error);
-      } finally {
-        setLoading(false);
-      }
+    // En modo mock, simplemente recargar desde localStorage
+    const mockUser = getCurrentUserMock();
+    if (mockUser) {
+      setUserProfile(mockUser);
+      // No necesitamos actualizar currentUser aquí
     }
   };
 
   const signOut = async () => {
     try {
-      await firebaseSignOut(auth);
+      await signOutMock();
       clearAllStores(); // Limpiar todos los stores
     } catch (error) {
       console.error('Error signing out:', error);
@@ -86,34 +84,34 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setCurrentUser(user);
+    // Inicializar con usuario mock si existe
+    const mockUser = getCurrentUserMock();
+    
+    if (mockUser) {
+      // Crear un objeto compatible con Firebase User
+      const firebaseUser = {
+        uid: mockUser.id,
+        email: mockUser.email,
+        displayName: mockUser.displayName,
+        emailVerified: true,
+        isAnonymous: false,
+        metadata: {},
+        providerData: [],
+        refreshToken: '',
+        tenantId: null,
+        delete: async () => {},
+        getIdToken: async () => '',
+        getIdTokenResult: async () => ({} as any),
+        reload: async () => {},
+        toJSON: () => ({})
+      } as any;
       
-      if (user) {
-        setLoading(true);
-        
-        try {
-          // Crear o actualizar el perfil del usuario
-          await createUserProfileDocument(user);
-          
-          // Obtener el perfil completo
-          const profile = await getUserProfile(user.uid);
-          setUserProfile(profile);
-          
-          // Marcar como inicializado
-          setInitialized(true);
-        } catch (error) {
-          console.error('Error loading user profile:', error);
-        } finally {
-          setLoading(false);
-        }
-      } else {
-        clearAuth();
-        setInitialized(true);
-      }
-    });
-
-    return unsubscribe;
+      setCurrentUser(firebaseUser);
+      setUserProfile(mockUser);
+    }
+    
+    setInitialized(true);
+    setLoading(false);
   }, [setCurrentUser, setUserProfile, setLoading, setInitialized, clearAuth]);
 
   const value: AuthContextType = {
