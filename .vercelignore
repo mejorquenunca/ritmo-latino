@@ -7,6 +7,8 @@
 # Archivos de AI/Genkit que pueden causar problemas
 src/ai/
 *.genkit.js
+src/ai/flows/
+src/ai/dev.ts
 
 # Archivos de Firebase
 firebase.json

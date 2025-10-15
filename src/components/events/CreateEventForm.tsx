@@ -30,7 +30,7 @@ import { useToast } from "@/hooks/use-toast";
 import { users } from "@/lib/placeholder-data";
 import { useState } from "react";
 import Image from "next/image";
-import { enhanceImage } from "@/ai/flows/enhance-image-flow";
+// import { enhanceImage } from "@/ai/flows/enhance-image-flow";
 import { Textarea } from "../ui/textarea";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -116,43 +116,12 @@ export function CreateEventForm() {
   }
 
   const handleEnhanceImage = async () => {
-    if (!imagePreview) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Por favor, sube una imagen primero.",
-      });
-      return;
-    }
-    
-    setIsEnhancing(true);
-    try {
-      const result = await enhanceImage({ imageDataUri: imagePreview });
-      setImagePreview(result.enhancedImageDataUri);
-
-      // Convert the enhanced base64 image back to a File object to keep form data consistent
-      const response = await fetch(result.enhancedImageDataUri);
-      const blob = await response.blob();
-      const enhancedFile = new File([blob], "enhanced-image.png", { type: blob.type });
-
-      const dataTransfer = new DataTransfer();
-      dataTransfer.items.add(enhancedFile);
-      form.setValue('image', dataTransfer.files, { shouldValidate: true });
-      
-      toast({
-        title: "¡Imagen Mejorada!",
-        description: "Tu imagen ha sido mejorada con IA.",
-      });
-    } catch (error) {
-      console.error("Error enhancing image:", error);
-      toast({
-        variant: "destructive",
-        title: "Error de IA",
-        description: "No se pudo mejorar la imagen en este momento.",
-      });
-    } finally {
-      setIsEnhancing(false);
-    }
+    // Función deshabilitada temporalmente para producción
+    toast({
+      variant: "destructive",
+      title: "Función no disponible",
+      description: "La mejora de imagen con IA estará disponible próximamente",
+    });
   };
 
   function onSubmit(data: EventFormValues) {
